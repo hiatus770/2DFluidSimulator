@@ -1,0 +1,4 @@
+# ninja log v6
+3	229	1715179110771571645	CMakeFiles/GraphicsStuff.dir/src/glad.c.o	7c7402004d24282
+2	1640	1715187962743129796	CMakeFiles/GraphicsStuff.dir/src/main.cpp.o	d5fd3f316b0f7e94
+1640	1761	1715187964379807798	GraphicsStuff	6bbe3b801d43906b
