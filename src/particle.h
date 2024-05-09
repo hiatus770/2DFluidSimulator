@@ -64,6 +64,11 @@ public:
         particles.push_back(Particle(glm::vec2(100.0f, 100.0f), glm::vec2(0.0f, 0.0f), {0.0f, 1.0f, 1.0f, 1.0f})); 
         particles.push_back(Particle(glm::vec2(1920.0f/2, 1080.0f/2), glm::vec2(0.0f, 0.0f), {0.0f, 1.0f, 1.0f, 1.0f}, 10)); 
 
+        for(int i = 0; i < 100000; i++){
+            
+            std::vector<float> tempColor = {(rand()%1000)/1000.0f, (float)((rand()%1000)/1000), (rand()%1000)/1000.0f, 1.0f}; 
+            particles.push_back(Particle(glm::vec2(rand()%1920, rand()%1080), glm::vec2(0.0f, 0.0f), tempColor, rand()%100)); 
+        }
 
         generateColorArray(); 
         generateRadiiArray(); 
@@ -115,6 +120,34 @@ public:
         particleShader->setMat4("view", camera.getViewMatrix());
         particleShader->setMat4("projection", glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f)); 
 
+
+        generateColorArray();
+        generatePositionArray(); 
+        generateRadiiArray(); 
+
+        // REALLOCATING BUFFERS
+        // POSITION VBO 
+        glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_DYNAMIC_COPY); 
+        glEnableVertexAttribArray(1); 
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); 
+        glVertexAttribDivisor(1, 1);
+        // Setting up each particle color 
+        glEnableVertexAttribArray(2); 
+        glBindBuffer(GL_ARRAY_BUFFER, colorVBO); 
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * colors.size(), colors.data(), GL_DYNAMIC_COPY); 
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0); 
+        glVertexAttribDivisor(2, 1); 
+
+        // Setting up each radius 
+        glEnableVertexAttribArray(3); 
+        glBindBuffer(GL_ARRAY_BUFFER, radiusVBO); 
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * radii.size(), radii.data(), GL_DYNAMIC_COPY); 
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0); 
+        glVertexAttribDivisor(3, 1);
+
+
+        // FINAL RENDER 
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, quadPosition.size(), particles.size()); 
         glBindVertexArray(0); 

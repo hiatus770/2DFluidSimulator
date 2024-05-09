@@ -22,7 +22,5 @@ void main()
     
     radius = aRadius; 
     center = aOffset.xy; 
-
     color = aColor; 
-
 }
