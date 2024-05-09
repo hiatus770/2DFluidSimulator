@@ -16,7 +16,7 @@ public:
     glm::mat4 model = glm::mat4(1.0f); 
 
     Shader* shader; 
-
+    
     Object(Shader* gShader, std::vector<float> v, 
            std::vector<float> color = {1.0, 1.0, 1.0, 1.0}, 
            std::string vertexShaderPath = "/home/hiatus/Documents/OPENGLPROJECT/BetterShaders/src/shaders/vert.vs", 

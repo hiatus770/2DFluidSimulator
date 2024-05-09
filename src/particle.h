@@ -52,13 +52,13 @@ public:
         
         // Temporary, jsut having one test particle right now 
         particles.push_back(Particle(glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), {1.0f, 1.0f, 1.0f, 1.0f})); 
-        particles.push_back(Particle(glm::vec2(-0.5f, 0.5f), glm::vec2(0.0f, 0.0f), {1.0f, 1.0f, 1.0f, 1.0f})); 
+        particles.push_back(Particle(glm::vec2(300.0f, 300.0f), glm::vec2(0.0f, 0.0f), {1.0f, 1.0f, 1.0f, 1.0f})); 
 
         generateColorArray(); 
         generatePositionArray(); 
 
         glGenBuffers(1, &VBO); 
-
+        glGenBuffers(1, &colorVBO); 
         
         glGenVertexArrays(1, &VAO); 
 
@@ -81,10 +81,11 @@ public:
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); 
 
         // Setting up each particle color 
-        // glEnableVertexAttribArray(2); 
-        // glBindBuffer(GL_ARRAY_BUFFER, colorVBO); 
-        // glBufferData(GL_ARRAY_BUFFER, sizeof(float) * colors.size(), colors.data(), GL_STATIC_READ); 
-        // glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0); 
+        glEnableVertexAttribArray(2); 
+        glBindBuffer(GL_ARRAY_BUFFER, colorVBO); 
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * colors.size(), colors.data(), GL_STATIC_READ); 
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0); 
+        glVertexAttribDivisor(2, 1); 
 
 
         // ONce we are done using we bind to 0 
