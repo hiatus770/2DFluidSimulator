@@ -76,10 +76,10 @@ int main()
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
 
-    ParticleHandler handler(2); 
+    ParticleHandler handler(3); 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
 
-    Object testObject(&globalShader, {1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f}); 
+    Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f, 1920.0f, 1.0f}); 
     
 
     // Main Loop of the function
@@ -88,7 +88,7 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        // std::cout << "FPS: " << 1 / deltaTime << std::endl;
+        std::cout << "FPS: " << 1 / deltaTime << std::endl;
 
         // Clear the screen before we start
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -97,8 +97,8 @@ int main()
         // Process input call
         processInput(window);
 
-        handler.render(GL_LINE_STRIP); 
-        testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix()); 
+        handler.render(); 
+        // testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix()); 
        
         glfwSwapBuffers(window); // Swaps the color buffer that is used to render to during this render iteration and show it ot the output screen
         glfwPollEvents();        // Checks if any events are triggered, updates the window state andcalls the corresponding functions

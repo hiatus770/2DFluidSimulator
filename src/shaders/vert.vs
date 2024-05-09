@@ -13,5 +13,5 @@ void main()
     vec3 pos = vec3(projection * view * model * vec4(aPos.x, aPos.y, 0.0, 1.0)); 
     dist = length(pos); 
     gl_Position = projection * view * model * vec4(aPos.x, aPos.y, 0.0, 1.0);
-    gl_Position = projection * vec4(aPos.x, aPos.y, 0.0, 1.0);
+    gl_Position = projection * view * vec4(aPos.x, aPos.y, 0.0, 1.0);
 }
