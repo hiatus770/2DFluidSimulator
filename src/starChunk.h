@@ -39,6 +39,7 @@ public:
         glGenVertexArrays(1, &VAO); // Generate 1
 
         glBindVertexArray(VAO);
+        
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * starVertices.size(), starVertices.data(), GL_STATIC_DRAW);
 

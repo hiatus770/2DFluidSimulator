@@ -1,5 +1,5 @@
 #version 330 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec2 aPos;
 
 uniform mat4 model; 
 uniform mat4 view; 
@@ -10,9 +10,8 @@ out float dist;
 
 void main()
 { 
-    
-    vec3 pos = vec3(projection * view * model * vec4(aPos.xyz, 1.0)); 
-    // dist = sqrt((pos.x-cameraPos.x)*(pos.x-cameraPos.x) + (pos.y-cameraPos.y)*(pos.y-cameraPos.y) + (pos.z - cameraPos.z)*(pos.z - cameraPos.z));  
+    vec3 pos = vec3(projection * view * model * vec4(aPos.x, aPos.y, 0.0, 1.0)); 
     dist = length(pos); 
-    gl_Position = projection * view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_Position = projection * view * model * vec4(aPos.x, aPos.y, 0.0, 1.0);
+    gl_Position = projection * vec4(aPos.x, aPos.y, 0.0, 1.0);
 }

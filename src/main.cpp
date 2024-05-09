@@ -19,7 +19,7 @@ const int PLANETS_PER_CHUNK = 10;
 
 #include "camera.h"
 
-Camera camera; // Global Camera for the entire code thing :)
+Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f)); // Global Camera for the entire code thing :)
 
 #include "player.h"
 #include "star.h"
@@ -27,6 +27,7 @@ Camera camera; // Global Camera for the entire code thing :)
 #include "planet.h"
 #include "planetChunk.h"
 #include "drawing.h"
+#include "particle.h"
 
 // Whenever the window is changed this function is called
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -50,7 +51,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // This means we do not use any backwards compatible features, so its a smaller set of all of OPENGL
 
     // Creating the window object
-    GLFWwindow *window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "Moverment", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "Balls!", NULL, NULL);
 
     if (window == NULL)
     {
@@ -75,8 +76,11 @@ int main()
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
 
-    // The global shader for the program 
+    ParticleHandler handler(2); 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
+
+    Object testObject(&globalShader, {1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f}); 
+    
 
     // Main Loop of the function
     while (!glfwWindowShouldClose(window))
@@ -84,7 +88,7 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        std::cout << "FPS: " << 1 / deltaTime << std::endl;
+        // std::cout << "FPS: " << 1 / deltaTime << std::endl;
 
         // Clear the screen before we start
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -93,7 +97,8 @@ int main()
         // Process input call
         processInput(window);
 
-        // globalShader.setVec3("cameraPos", {player.getCameraPosition().x, player.getCameraPosition().y, player.getCameraPosition().z}); 
+        handler.render(GL_LINE_STRIP); 
+        testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix()); 
        
         glfwSwapBuffers(window); // Swaps the color buffer that is used to render to during this render iteration and show it ot the output screen
         glfwPollEvents();        // Checks if any events are triggered, updates the window state andcalls the corresponding functions
@@ -153,8 +158,8 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 void processInput(GLFWwindow *window)
 {
     // // Function is used as follows player.processKeyboard(ENUM, deltaTime);
-    // if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    //     glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
     // if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     //     player.processKeyboard(FORWARD, deltaTime);
     // if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)

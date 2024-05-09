@@ -23,10 +23,6 @@ public:
            std::string fragmentShaderPath = "/home/hiatus/Documents/OPENGLPROJECT/BetterShaders/src/shaders/frag.fs")
     {
         shader = gShader; 
-        if (v.size()%6 != 0){
-            std::cout << "Invalid size for vertices, must be pairs of 3 floats\n"; 
-            return; 
-        }
 
         for(int i = 0; i < v.size(); i++){
             vertices.push_back(v[i]); 
@@ -45,7 +41,7 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, VBO); 
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW); 
         // Assumes we are doing 3 floats 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); 
         // Enable this attribute now in the shader 
         glEnableVertexAttribArray(0);
     }
