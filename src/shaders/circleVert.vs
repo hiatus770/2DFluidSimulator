@@ -1,5 +1,5 @@
 #version 330 core
-layout (location = 0) in vec2 aPos;
+layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aOffset; 
 layout (location = 2) in vec4 aColor; 
 layout (location = 3) in float aRadius; 
@@ -17,10 +17,10 @@ void main()
 { 
     float multiplier = aRadius; 
 
-    gl_Position = projection * view * vec4(aPos*multiplier + aOffset, 0.0, 1.0);
-    position = aPos*multiplier + aOffset; // (projection * view * vec4(aPosNew + aOffset, 0.0, 1.0)).xy; 
+    gl_Position = projection * view * vec4(aPos.xy*multiplier + aOffset, aPos.z, 1.0);
+    position = aPos.xy*multiplier + aOffset; // (projection * view * vec4(aPosNew + aOffset, 0.0, 1.0)).xy; 
     
     radius = aRadius; 
-    center = aOffset.xy; 
+    center = aOffset; 
     color = aColor; 
 }

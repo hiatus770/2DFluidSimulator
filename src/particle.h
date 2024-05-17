@@ -5,27 +5,30 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "shader.h"
+#include <algorithm>
 
 class Particle 
 {
 public:
-    glm::vec2 pos;
+    glm::vec3 pos;
     glm::vec2 velocity;
     float mass = 1.0f;
     float radius = 50.0f;
+    int depth; 
     std::vector<float> color = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    Particle(glm::vec2 p, glm::vec2 v, std::vector<float> Color){
+    Particle(glm::vec3 p, glm::vec2 v, std::vector<float> Color){
         pos = p;
         velocity = v;
         color = Color; 
     }; 
 
-    Particle(glm::vec2 p, glm::vec2 v, std::vector<float> Color, float Radius){
+    Particle(glm::vec3 p, glm::vec2 v, std::vector<float> Color, float Radius, int Depth){
         pos = p;
         velocity = v;
         color = Color;
         radius = Radius;
+        depth = Depth; 
     }
 };
 
@@ -60,14 +63,15 @@ public:
         particleShader = new Shader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/circleVert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/circleFrag.fs");
         
         // Temporary, jsut having one test particle right now 
-        particles.push_back(Particle(glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f), {1.0f, 1.0f, 1.0f, 1.0f})); 
-        particles.push_back(Particle(glm::vec2(100.0f, 100.0f), glm::vec2(0.0f, 0.0f), {0.0f, 1.0f, 1.0f, 1.0f})); 
-        particles.push_back(Particle(glm::vec2(1920.0f/2, 1080.0f/2), glm::vec2(0.0f, 0.0f), {0.0f, 1.0f, 1.0f, 1.0f}, 10)); 
+        particles.push_back(Particle(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f), {1.0f, 1.0f, 1.0f, 1.0f})); 
+        particles.push_back(Particle(glm::vec3(100.0f, 100.0f, 0.0f), glm::vec2(0.0f, 0.0f), {0.0f, 1.0f, 1.0f, 1.0f})); 
+        particles.push_back(Particle(glm::vec3(1920.0f/2, 1080.0f/2, 0.0f), glm::vec2(0.0f, 0.0f), {0.0f, 1.0f, 1.0f, 1.0f})); 
 
         for(int i = 0; i < 100000; i++){
             
             std::vector<float> tempColor = {(rand()%1000)/1000.0f, (float)((rand()%1000)/1000), (rand()%1000)/1000.0f, 1.0f}; 
-            particles.push_back(Particle(glm::vec2(rand()%1920, rand()%1080), glm::vec2(0.0f, 0.0f), tempColor, rand()%100)); 
+            particles.push_back(Particle(glm::vec3(rand()%1920, rand()%1080, -(float)i), glm::vec2(0.0f, 0.0f), tempColor, rand()%100, i)); 
+        
         }
 
         generateColorArray(); 
@@ -86,7 +90,7 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_DYNAMIC_COPY); 
         glEnableVertexAttribArray(1); 
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0); 
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
         glVertexAttribDivisor(1, 1); 
 
         // Regular VBO 
@@ -115,12 +119,18 @@ public:
 
     };
 
+    void sortParticles() {
+        std::sort(particles.begin(), particles.end(), [](const Particle& a, const Particle& b) {
+            return a.pos.z > b.pos.z;
+        });
+    }
+
     void render(GLenum mode = GL_LINES){
         particleShader->use();
         particleShader->setMat4("view", camera.getViewMatrix());
         particleShader->setMat4("projection", glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f)); 
 
-
+        sortParticles(); 
         generateColorArray();
         generatePositionArray(); 
         generateRadiiArray(); 

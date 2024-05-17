@@ -9,10 +9,9 @@ in float radius;
 
 void main()
 {
-    FragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f); 
     if (length(position - center) <= radius){
         FragColor = color; 
     } else {
-        discard; 
+        FragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f); 
     }
 }
