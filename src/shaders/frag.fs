@@ -15,9 +15,9 @@ void main()
 
     FragColor = color; 
 
-    if (dist > 1000){
-        FragColor = mix(color, vec4(0.0, 0.0, 0.0, 1.0), 0.1f);
-    } else {
-        FragColor = mix(color, vec4(0.0, 0.0, 0.0, 1.0), (-1)/(10*(dist-1000)));
-    }
+    // if (dist > 1000){
+    //     FragColor = mix(color, vec4(0.0, 0.0, 0.0, 1.0), 0.1f);
+    // } else {
+    //     FragColor = mix(color, vec4(0.0, 0.0, 0.0, 1.0), (-1)/(10*(dist-1000)));
+    // }
 }

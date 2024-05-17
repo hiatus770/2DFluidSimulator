@@ -17,7 +17,7 @@ public:
 
     Shader* shader; 
     
-    Object(Shader* gShader, std::vector<float> v, 
+    Object(Shader* gShader, std::vector<float> v = {}, 
            std::vector<float> color = {1.0, 1.0, 1.0, 1.0}, 
            std::string vertexShaderPath = "/home/hiatus/Documents/OPENGLPROJECT/BetterShaders/src/shaders/vert.vs", 
            std::string fragmentShaderPath = "/home/hiatus/Documents/OPENGLPROJECT/BetterShaders/src/shaders/frag.fs")
@@ -62,7 +62,11 @@ public:
      * @param projection 
      * @param mode 
      */
-    void render(glm::mat4 view, glm::mat4 projection, GLenum mode = GL_LINES){
+    void render(glm::mat4 view, glm::mat4 projection, GLenum mode = GL_TRIANGLE_FAN){
+        glBindBuffer(GL_ARRAY_BUFFER, VBO); 
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0); 
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0); 
         shader->use(); 
         shader->setVec4("color", objColor); 
         shader->setMat4("model", model); 

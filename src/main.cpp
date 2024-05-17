@@ -80,12 +80,10 @@ int main()
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
 
-    ParticleHandler handler(3); 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
 
     Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f, 1920.0f, 1.0f}); 
     
-
     // Main Loop of the function
     while (!glfwWindowShouldClose(window))
     {
@@ -101,8 +99,7 @@ int main()
         // Process input call
         processInput(window);
 
-        handler.render(); 
-        // testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix()); 
+        testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix()); 
        
         glfwSwapBuffers(window); // Swaps the color buffer that is used to render to during this render iteration and show it ot the output screen
         glfwPollEvents();        // Checks if any events are triggered, updates the window state andcalls the corresponding functions
