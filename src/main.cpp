@@ -19,7 +19,7 @@ const int PLANETS_PER_CHUNK = 10;
 
 #include "camera.h"
 
-Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f)); // Global Camera for the entire code thing :)
+Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f)); // Global Camera for the entire code thing :)
 
 #include "player.h"
 #include "star.h"
@@ -39,6 +39,8 @@ void processInput(GLFWwindow *window);
 // timing
 float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
+
+
 
 int main()
 {
@@ -77,12 +79,17 @@ int main()
     // glEnable(GL_BLEND);
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Temporary code before i place it into a class
+    unsigned int positionSSBO; 
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO); 
+
+
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
 
-    Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f, 1920.0f, 1.0f}); 
+    Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f}); 
     
     // Main Loop of the function
     while (!glfwWindowShouldClose(window))
@@ -99,7 +106,7 @@ int main()
         // Process input call
         processInput(window);
 
-        testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix()); 
+        testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix(), GL_LINES); 
        
         glfwSwapBuffers(window); // Swaps the color buffer that is used to render to during this render iteration and show it ot the output screen
         glfwPollEvents();        // Checks if any events are triggered, updates the window state andcalls the corresponding functions
