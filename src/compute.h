@@ -56,8 +56,6 @@ public:
     void use()
     {
         glUseProgram(ID);
-        glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, out_tex);
     }
     void dispatch()
     {

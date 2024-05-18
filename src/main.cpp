@@ -22,10 +22,6 @@ const int PLANETS_PER_CHUNK = 10;
 Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f)); // Global Camera for the entire code thing :)
 
 #include "player.h"
-#include "star.h"
-#include "starChunk.h"
-#include "planet.h"
-#include "planetChunk.h"
 #include "compute.h"
 #include "particle.h"
 
@@ -76,35 +72,46 @@ int main()
     
     glEnable(GL_DEPTH_TEST);
 
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    
     // glEnable(GL_BLEND);
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Temporary code before i place it into a class
+    // ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.cms"); 
+    
     unsigned int positionSSBO; 
     int workGroupSize = 10; 
     int xAmt = 100; 
     int yAmt = 100;
     float deltaL = 1; 
+    
     std::vector<float> positions; 
     std::vector<float> outputPositions; 
     for(int i = 0; i < xAmt; i++){
         for(int j = 0; j < yAmt; j++){
             positions.push_back(i * deltaL);
-            positions.push_back(j * deltaL);  
+            positions.push_back(j * deltaL);
         }
     }
     glGenBuffers(1, &positionSSBO); 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO); 
-    glBufferData(GL_SHADER_STORAGE_BUFFER, 2 * xAmt * yAmt * sizeof(float), positions.data(), GL_STATIC_DRAW); 
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO);  
+    glBufferData(GL_SHADER_STORAGE_BUFFER, positions.size() * sizeof(float), positions.data(), GL_DYNAMIC_DRAW);   
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, positionSSBO); 
     
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, mouse_callback);
+    // This vector is updated in the future by the particle handler!
+    // unsigned int metaballsSSBO;  
+    // std::vector<float> metaballs = {100.0f, 100.0f, 1.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
+    // glGenBuffers(1, &metaballsSSBO); 
+    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, metaballsSSBO);  
+    // glBufferData(GL_SHADER_STORAGE_BUFFER, metaballs.size() * sizeof(float), metaballs.data(), GL_STATIC_DRAW); 
+
+    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, metaballsSSBO);  
 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
 
     Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f}); 
-
-    ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.cms"); 
  
     // Main Loop of the function
     while (!glfwWindowShouldClose(window))
@@ -121,6 +128,27 @@ int main()
         // Process input call
         processInput(window);
 
+        // computeShader.use(); 
+        // computeShader.dispatch(); 
+        // computeShader.wait(); 
+
+
+        GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO);
+        float results[positions.size()];
+        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, positions.size() * sizeof(float), &results); 
+
+        if (results == nullptr){
+            std::cout << "Yikes bro" << std::endl; 
+        }
+        for(int i = 0; i < positions.size(); i++){
+            std::cout << results[i] << " "; 
+        }
+        std::cout << std::endl; 
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); 
+        
+        break; 
+        
         testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix(), GL_LINES); 
        
         glfwSwapBuffers(window); // Swaps the color buffer that is used to render to during this render iteration and show it ot the output screen
