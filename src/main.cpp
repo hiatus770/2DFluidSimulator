@@ -79,7 +79,7 @@ int main()
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Temporary code before i place it into a class
-    // ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.cms"); 
+    ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.cms"); 
     
     unsigned int positionSSBO; 
     int workGroupSize = 10; 
@@ -128,9 +128,9 @@ int main()
         // Process input call
         processInput(window);
 
-        // computeShader.use(); 
-        // computeShader.dispatch(); 
-        // computeShader.wait(); 
+        computeShader.use(); 
+        computeShader.dispatch(); 
+        computeShader.wait(); 
 
 
         GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 

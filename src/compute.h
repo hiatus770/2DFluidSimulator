@@ -43,6 +43,7 @@ public:
         unsigned int compute;
         compute = glCreateShader(GL_COMPUTE_SHADER);
         glShaderSource(compute, 1, &cShaderCode, NULL);
+        glCompileShader(compute); 
         checkCompileErrors(compute, "COMPUTE");
 
         ID = glCreateProgram();
