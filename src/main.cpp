@@ -26,7 +26,7 @@ Camera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::ve
 #include "starChunk.h"
 #include "planet.h"
 #include "planetChunk.h"
-#include "drawing.h"
+#include "compute.h"
 #include "particle.h"
 
 // Whenever the window is changed this function is called
@@ -81,16 +81,31 @@ int main()
 
     // Temporary code before i place it into a class
     unsigned int positionSSBO; 
+    int workGroupSize = 10; 
+    int xAmt = 100; 
+    int yAmt = 100;
+    float deltaL = 1; 
+    std::vector<float> positions; 
+    std::vector<float> outputPositions; 
+    for(int i = 0; i < xAmt; i++){
+        for(int j = 0; j < yAmt; j++){
+            positions.push_back(i * deltaL);
+            positions.push_back(j * deltaL);  
+        }
+    }
+    glGenBuffers(1, &positionSSBO); 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO); 
-
-
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 2 * xAmt * yAmt * sizeof(float), positions.data(), GL_STATIC_DRAW); 
+    
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
 
     Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f}); 
-    
+
+    ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.cms"); 
+ 
     // Main Loop of the function
     while (!glfwWindowShouldClose(window))
     {
