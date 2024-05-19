@@ -84,14 +84,14 @@ int main()
     int workGroupSize = 10; 
     int xAmt = 100; 
     int yAmt = 100;
-    float deltaL = 1.0f; 
+    float deltaL = 5.0f; 
 
-    computeShader.setFloat("delta", deltaL); 
+    // computeShader.setFloat("delta", deltaL); 
 
     // Important vectors to track 
     std::vector<float> positions; 
     std::vector<float> outputPositions; 
-    std::vector<float> metaballs = {3.01f, 3.03f, 5.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
+    std::vector<float> metaballs = {50.01f, 50.03f, 30.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
     for(int i = 0; i < xAmt; i++){
         for(int j = 0; j < yAmt; j++){
             positions.push_back(i * deltaL);
@@ -141,8 +141,7 @@ int main()
         // Running compute shader
         computeShader.use(); 
         computeShader.dispatch(); 
-        computeShader.wait(); 
-        glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);         
+        computeShader.wait();         
 
         // OLD RENDERING CODE!
         // GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
@@ -166,19 +165,15 @@ int main()
         // testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix(),  GL_LINES); 
        
         // NEW RENDERING CODE!
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, outputPositionSSBO); 
-        glBindBuffer(GL_ARRAY_BUFFER, testObject.VBO); 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * testObject.vertices.size(), testObject.vertices.data(), GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0); 
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0); 
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, outputPositionSSBO); 
         testObject.shader->use(); 
         testObject.shader->setVec4("color", testObject.objColor); 
         testObject.shader->setMat4("model", testObject.model); 
         testObject.shader->setMat4("view", camera.getViewMatrix()); 
         testObject.shader->setMat4("projection", camera.getProjectionMatrix()); 
         glBindVertexArray(testObject.VAO);
-        glDrawArraysInstanced(GL_LINES, 0, testObject.vertices.size(), 100*10); 
- 
+        glDrawArraysInstanced(GL_LINES, 0, 2, 100*100);  
+        // glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 3); 
         
         // glDrawArraysInstanced(GL_LINES, 0, positions.size()/2, outputPositions.size()/2); 
 

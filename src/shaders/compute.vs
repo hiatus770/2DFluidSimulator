@@ -1,11 +1,11 @@
 #version 430 core
 
-layout (local_size_x = 10, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 //#extension GL_ARB_compute_shader : enable;
 //#extension GL_ARB_shader_storage_buffer_object : enable;
 
-uniform float delta = 1.0f; 
+uniform float delta = 10.0f; 
 
 layout (std430, binding = 4) buffer pos {
     vec2 positions[]; 
@@ -32,10 +32,14 @@ void main(){
     float centerValue; 
     bool tl, tr, bl, br, c; 
 
-    outputPositions[gid*4] =  vec2(10 + gid*20, 40 + gid); 
-    outputPositions[gid*4 + 1] = vec2(20 + gid*20, 30 + gid);
-    outputPositions[gid*4 + 2] = vec2(30 + gid*20, 20 + gid);
-    outputPositions[gid*4 + 3] = vec2(40 + gid*20, 10 + gid);
+    //outputPositions[gid*4] =  vec2(10 + gid*20, 40 + gid); 
+    //outputPositions[gid*4 + 1] = vec2(20 + gid*20, 30 + gid);
+    //outputPositions[gid*4 + 2] = vec2(30 + gid*20, 20 + gid);
+    //outputPositions[gid*4 + 3] = vec2(40 + gid*20, 10 + gid);
+    outputPositions[gid*4] =    vec2(0 , 0); 
+    outputPositions[gid*4 + 1] = vec2(0, 0);
+    outputPositions[gid*4 + 2] = vec2(0, 0);
+    outputPositions[gid*4 + 3] = vec2(0, 0);
 
     // Center calculation
     if (computeAtXY(positions[gid].x, positions[gid].y) >= 1){
@@ -78,29 +82,31 @@ void main(){
         outputPositions[gid*4 + 1] =    vec2(positions[gid].x, positions[gid].y - delta/2);
 
     }
-    if (br == false && bl == true && tl == false && tr == false){
-        // Marching cubes
-        outputPositions[gid*4] =        vec2(positions[gid].x - delta/2, positions[gid].y);
-        outputPositions[gid*4 + 1] =    vec2(positions[gid].x, positions[gid].y - delta/2);
-    }
-    if (br == false && bl == false && tl == true && tr == false){
-        // Marching cubes
-        outputPositions[gid*4] =        vec2(positions[gid].x - delta/2, positions[gid].y);
-        outputPositions[gid*4 + 1] =    vec2(positions[gid].x, positions[gid].y + delta/2);
-
-    }
-    if (br == false && bl == false && tl == false && tr == true){
-        // Marching cubes
-        outputPositions[gid*4] =        vec2(positions[gid].x + delta/2, positions[gid].y);
-        outputPositions[gid*4 + 1] =    vec2(positions[gid].x, positions[gid].y + delta/2);
-    }
-    
-    // if (br == true && bl == true && tl == true && tr == true){
+    // if (br == false && bl == true && tl == false && tr == false){
     //     // Marching cubes
-    //     outputPositions[gid*4] = vec2(gid, metaballs.length());
-    //     outputPositions[gid*4 + 1] =    vec2(computeAtXY(positions[gid].x - delta/2, positions[gid].y - delta/2), 808);
-    //     outputPositions[gid*4 + 2] =    vec2(positions[gid].x, positions[gid].y);
+    //     outputPositions[gid*4] =        vec2(positions[gid].x - delta/2, positions[gid].y);
+    //     outputPositions[gid*4 + 1] =    vec2(positions[gid].x, positions[gid].y - delta/2);
     // }
+    // if (br == false && bl == false && tl == true && tr == false){
+    //     // Marching cubes
+    //     outputPositions[gid*4] =        vec2(positions[gid].x - delta/2, positions[gid].y);
+    //     outputPositions[gid*4 + 1] =    vec2(positions[gid].x, positions[gid].y + delta/2);
+
+    // }
+    // if (br == false && bl == false && tl == false && tr == true){
+    //     // Marching cubes
+    //     outputPositions[gid*4] =        vec2(positions[gid].x + delta/2, positions[gid].y);
+    //     outputPositions[gid*4 + 1] =    vec2(positions[gid].x, positions[gid].y + delta/2);
+    // }
+    
+    if (br == true && bl == true && tl == true && tr == true){
+        // Marching cubes
+        // If the entire square is inside the metaball, then just use the two lines to make an x
+        outputPositions[gid*4] =        vec2(positions[gid].x + delta/2, positions[gid].y);
+        outputPositions[gid*4 + 1] =    vec2(positions[gid].x - delta/2, positions[gid].y);
+        outputPositions[gid*4 + 2] =    vec2(positions[gid].x, positions[gid].y + delta/2);
+        outputPositions[gid*4 + 3] =    vec2(positions[gid].x, positions[gid].y - delta/2);
+    }
     
     // if (br == false && bl == false && tl == false && tr == false || true){
     //     // Marching cubes
@@ -108,6 +114,4 @@ void main(){
     //     outputPositions[gid*4 + 1] =    vec2(computeAtXY(positions[gid].x - delta/2, positions[gid].y - delta/2), 808);
     //     outputPositions[gid*4 + 2] =    vec2(positions[gid].x, positions[gid].y);
     // }
-
-    positions[gid] = vec2(metaballs[0].x, metaballs[0].y);
 }
