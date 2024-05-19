@@ -91,7 +91,7 @@ int main()
     // Important vectors to track 
     std::vector<float> positions; 
     std::vector<float> outputPositions; 
-    std::vector<float> metaballs = {3.01f, 3.03f, 400.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
+    std::vector<float> metaballs = {3.01f, 3.03f, 5.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
     for(int i = 0; i < xAmt; i++){
         for(int j = 0; j < yAmt; j++){
             positions.push_back(i * deltaL);
@@ -166,11 +166,11 @@ int main()
             outputPositions.push_back(output[i+1]); 
         } std::cout << std::endl; 
 
-        break; 
+        // break; 
 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-        // testObject.vertices = outputPositions;   
+        testObject.vertices = outputPositions;   
         
         testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix(),  GL_LINES); 
        

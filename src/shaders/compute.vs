@@ -102,12 +102,12 @@ void main(){
     //     outputPositions[gid*4 + 2] =    vec2(positions[gid].x, positions[gid].y);
     // }
     
-    if (br == false && bl == false && tl == false && tr == false){
-        // Marching cubes
-        outputPositions[gid*4] = vec2(gid, metaballs.length());
-        outputPositions[gid*4 + 1] =    vec2(computeAtXY(positions[gid].x - delta/2, positions[gid].y - delta/2), 808);
-        outputPositions[gid*4 + 2] =    vec2(positions[gid].x, positions[gid].y);
-    }
+    // if (br == false && bl == false && tl == false && tr == false || true){
+    //     // Marching cubes
+    //     outputPositions[gid*4] = vec2(gid, metaballs.length());
+    //     outputPositions[gid*4 + 1] =    vec2(computeAtXY(positions[gid].x - delta/2, positions[gid].y - delta/2), 808);
+    //     outputPositions[gid*4 + 2] =    vec2(positions[gid].x, positions[gid].y);
+    // }
 
     positions[gid] = vec2(metaballs[0].x, metaballs[0].y);
 }
