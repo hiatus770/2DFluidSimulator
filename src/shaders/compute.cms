@@ -10,6 +10,14 @@ layout (std430, binding = 4) buffer pos {
     vec2 positions[]; 
 };
 
+layout(std430, binding = 5) buffer meta {
+    vec4 metaballs[];
+}; 
+
+layout(std430, binding = 6) buffer outputPositions {
+    vec2 outputPositions[];
+};
+
 void main(){
     uint gid = gl_GlobalInvocationID.x;
     positions[gid] = vec2(150.0, 100.0);

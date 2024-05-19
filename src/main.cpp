@@ -81,7 +81,6 @@ int main()
     // Temporary code before i place it into a class
     ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.cms"); 
     
-    unsigned int positionSSBO; 
     int workGroupSize = 10; 
     int xAmt = 100; 
     int yAmt = 100;
@@ -95,19 +94,27 @@ int main()
             positions.push_back(j * deltaL);
         }
     }
+    
+    unsigned int positionSSBO; 
     glGenBuffers(1, &positionSSBO); 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO);  
     glBufferData(GL_SHADER_STORAGE_BUFFER, positions.size() * sizeof(float), positions.data(), GL_DYNAMIC_DRAW);   
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, positionSSBO); 
     
     // This vector is updated in the future by the particle handler!
-    // unsigned int metaballsSSBO;  
-    // std::vector<float> metaballs = {100.0f, 100.0f, 1.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
-    // glGenBuffers(1, &metaballsSSBO); 
-    // glBindBuffer(GL_SHADER_STORAGE_BUFFER, metaballsSSBO);  
-    // glBufferData(GL_SHADER_STORAGE_BUFFER, metaballs.size() * sizeof(float), metaballs.data(), GL_STATIC_DRAW); 
+    std::vector<float> metaballs = {100.0f, 100.0f, 1.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
+    // Metaballs SSBO 
+    unsigned int metaballsSSBO;  
+    glGenBuffers(1, &metaballsSSBO); 
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, metaballsSSBO);  
+    glBufferData(GL_SHADER_STORAGE_BUFFER, metaballs.size() * sizeof(float), metaballs.data(), GL_STATIC_READ); 
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, metaballsSSBO);  
 
-    // glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, metaballsSSBO);  
+    unsigned int outputPositionSSBO; 
+    glGenBuffers(1, &outputPositionSSBO); 
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, outputPositionSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, positions.size() * 4 * sizeof(float), NULL, GL_STATIC_DRAW); 
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, outputPositionSSBO); 
 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
 
@@ -132,19 +139,17 @@ int main()
         computeShader.dispatch(); 
         computeShader.wait(); 
 
-
+        // Reading buffer data
         GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO);
         float results[positions.size()];
         glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, positions.size() * sizeof(float), &results); 
 
-        if (results == nullptr){
-            std::cout << "Yikes bro" << std::endl; 
-        }
         for(int i = 0; i < positions.size(); i++){
             std::cout << results[i] << " "; 
         }
         std::cout << std::endl; 
+        
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); 
         
         break; 
