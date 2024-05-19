@@ -61,7 +61,7 @@ public:
     void dispatch()
     {
         // just keep it simple, 2d work group
-        glDispatchCompute(10*10, 1, 1);
+        glDispatchCompute(50*50, 1, 1);
     }
     void wait()
     {
