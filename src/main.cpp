@@ -82,8 +82,8 @@ int main()
     ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.vs"); 
     
     int workGroupSize = 10; 
-    int xAmt = 50; 
-    int yAmt = 50;
+    int xAmt = 100; 
+    int yAmt = 100;
     float deltaL = 1.0f; 
 
     computeShader.setFloat("delta", deltaL); 
@@ -120,7 +120,8 @@ int main()
 
     Shader globalShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/vert.vs", "/home/hiatus/Documents/2DFluidSimulator/src/shaders/frag.fs");
 
-    Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f}); 
+    //Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f, 0.0f, 1920.0f, 1080.0f}); 
+    Object testObject(&globalShader, {0.0f, 0.0f, 1080.0f/2, 0.0f, 1920.0f/2, 1080.0f/2}); 
  
     // Main Loop of the function
     while (!glfwWindowShouldClose(window))
@@ -141,19 +142,7 @@ int main()
         computeShader.use(); 
         computeShader.dispatch(); 
         computeShader.wait(); 
-
-        // // Reading compute shader results!
-        // GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
-        // glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO);
-        // float results[positions.size()];
-        // glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, positions.size() * sizeof(float), &results); 
-
-        // for(int i = 0; i < positions.size(); i++){
-        //     // std::cout << results[i] << " "; 
-        // }
-
-        // Take in the output values 
-        
+        glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);         
 
         // OLD RENDERING CODE!
         // GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
@@ -166,28 +155,32 @@ int main()
         //     // std::cout << output[i] << " " << output[i+1] << " | "; 
         //     outputPositions.push_back(output[i]); 
         //     outputPositions.push_back(output[i+1]); 
-        // } //std::cout << std::endl; 
+        // } // std::cout << std::endl; 
 
-        // // break; 
+        // break; 
 
-        // glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+        // // glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
         // testObject.vertices = outputPositions;   
         
         // testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix(),  GL_LINES); 
        
         // NEW RENDERING CODE!
-        glBindBuffer(GL_ARRAY_BUFFER, outputPositionSSBO);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, outputPositionSSBO); 
+        glBindBuffer(GL_ARRAY_BUFFER, testObject.VBO); 
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * testObject.vertices.size(), testObject.vertices.data(), GL_STATIC_DRAW);
         glEnableVertexAttribArray(0); 
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-        
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0); 
         testObject.shader->use(); 
         testObject.shader->setVec4("color", testObject.objColor); 
         testObject.shader->setMat4("model", testObject.model); 
         testObject.shader->setMat4("view", camera.getViewMatrix()); 
         testObject.shader->setMat4("projection", camera.getProjectionMatrix()); 
         glBindVertexArray(testObject.VAO);
-        glDrawArrays(GL_LINES, 0, positions.size()*4); 
+        glDrawArraysInstanced(GL_LINES, 0, testObject.vertices.size(), 100*10); 
+ 
+        
+        // glDrawArraysInstanced(GL_LINES, 0, positions.size()/2, outputPositions.size()/2); 
 
         glfwSwapBuffers(window); // Swaps the color buffer that is used to render to during this render iteration and show it ot the output screen
         glfwPollEvents();        // Checks if any events are triggered, updates the window state andcalls the corresponding functions

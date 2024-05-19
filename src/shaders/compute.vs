@@ -1,6 +1,6 @@
 #version 430 core
 
-layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 10, local_size_y = 1, local_size_z = 1) in;
 
 //#extension GL_ARB_compute_shader : enable;
 //#extension GL_ARB_shader_storage_buffer_object : enable;
@@ -32,10 +32,10 @@ void main(){
     float centerValue; 
     bool tl, tr, bl, br, c; 
 
-    outputPositions[gid*4] =  vec2(-1, -1); 
-    outputPositions[gid*4 + 1] = vec2(-2, -1);
-    outputPositions[gid*4 + 2] = vec2(-3, -1);
-    outputPositions[gid*4 + 3] = vec2(-4, -1);
+    outputPositions[gid*4] =  vec2(10 + gid*20, 40 + gid); 
+    outputPositions[gid*4 + 1] = vec2(20 + gid*20, 30 + gid);
+    outputPositions[gid*4 + 2] = vec2(30 + gid*20, 20 + gid);
+    outputPositions[gid*4 + 3] = vec2(40 + gid*20, 10 + gid);
 
     // Center calculation
     if (computeAtXY(positions[gid].x, positions[gid].y) >= 1){

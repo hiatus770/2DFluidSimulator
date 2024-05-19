@@ -73,7 +73,7 @@ public:
         shader->setMat4("view", view); 
         shader->setMat4("projection", projection); 
         glBindVertexArray(VAO);
-        glDrawArrays(mode, 0, vertices.size()); 
+        glDrawArraysInstanced(mode, 0, vertices.size(), 100*100); 
     }
 
 };
