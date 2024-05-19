@@ -61,11 +61,16 @@ public:
     void dispatch()
     {
         // just keep it simple, 2d work group
-        glDispatchCompute(100*100, 1, 1);
+        glDispatchCompute(10*10, 1, 1);
     }
     void wait()
     {
         glMemoryBarrier(GL_ALL_BARRIER_BITS);
+    }
+
+    void setFloat(const std::string &name, float value) const 
+    {
+        glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
     }
 
 private:

@@ -79,15 +79,19 @@ int main()
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Temporary code before i place it into a class
-    ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.cms"); 
+    ComputeShader computeShader("/home/hiatus/Documents/2DFluidSimulator/src/shaders/compute.vs"); 
     
     int workGroupSize = 10; 
-    int xAmt = 100; 
-    int yAmt = 100;
+    int xAmt = 10; 
+    int yAmt = 10;
     float deltaL = 1; 
-    
+
+    computeShader.setFloat("delta", deltaL); 
+
+    // Important vectors to track 
     std::vector<float> positions; 
     std::vector<float> outputPositions; 
+    std::vector<float> metaballs = {3.01f, 3.03f, 400.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
     for(int i = 0; i < xAmt; i++){
         for(int j = 0; j < yAmt; j++){
             positions.push_back(i * deltaL);
@@ -101,8 +105,6 @@ int main()
     glBufferData(GL_SHADER_STORAGE_BUFFER, positions.size() * sizeof(float), positions.data(), GL_DYNAMIC_DRAW);   
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, positionSSBO); 
     
-    // This vector is updated in the future by the particle handler!
-    std::vector<float> metaballs = {100.0f, 100.0f, 1.0f, 0.0f}; // These just contain the x and y coordinate of the center along with the scaling factor! 
     // Metaballs SSBO 
     unsigned int metaballsSSBO;  
     glGenBuffers(1, &metaballsSSBO); 
@@ -135,26 +137,42 @@ int main()
         // Process input call
         processInput(window);
 
+        // Running compute shader
         computeShader.use(); 
         computeShader.dispatch(); 
         computeShader.wait(); 
 
-        // Reading buffer data
-        GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO);
-        float results[positions.size()];
-        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, positions.size() * sizeof(float), &results); 
+        // // Reading compute shader results!
+        // GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
+        // glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionSSBO);
+        // float results[positions.size()];
+        // glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, positions.size() * sizeof(float), &results); 
 
-        for(int i = 0; i < positions.size(); i++){
-            std::cout << results[i] << " "; 
-        }
-        std::cout << std::endl; 
+        // for(int i = 0; i < positions.size(); i++){
+        //     // std::cout << results[i] << " "; 
+        // }
+
+        // Take in the output values 
         
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); 
+        GLint bufMask = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT; 
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, outputPositionSSBO);
+        float output[positions.size()*4];
+        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 4 * positions.size() * sizeof(float), &output); 
         
+        
+        for(int i = 0; i < positions.size() * 4 -1; i+=2){
+            std::cout << output[i] << " " << output[i+1] << " | "; 
+            outputPositions.push_back(output[i]); 
+            outputPositions.push_back(output[i+1]); 
+        } std::cout << std::endl; 
+
         break; 
+
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+        // testObject.vertices = outputPositions;   
         
-        testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix(), GL_LINES); 
+        testObject.render(camera.getViewMatrix(), camera.getProjectionMatrix(),  GL_LINES); 
        
         glfwSwapBuffers(window); // Swaps the color buffer that is used to render to during this render iteration and show it ot the output screen
         glfwPollEvents();        // Checks if any events are triggered, updates the window state andcalls the corresponding functions
